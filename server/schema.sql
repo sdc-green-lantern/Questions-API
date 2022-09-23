@@ -93,6 +93,10 @@ FROM '/Users/dan/hack-reactor/sdc-green-lantern/Questions-API/csv-files/answers_
 DELIMITER ','
 CSV HEADER;
 
+SELECT setval('questions_id_seq', (SELECT MAX(id) FROM questions));
+SELECT setval('answers_id_seq', (SELECT MAX(id) FROM answers));
+SELECT setval('photos_id_seq', (SELECT MAX(id) FROM photos));
+
 CREATE INDEX idx_product_id on questions (product_id);
 CREATE INDEX idx_question_id on answers (question_id);
 CREATE INDEX idx_answer_id on photos (answer_id);

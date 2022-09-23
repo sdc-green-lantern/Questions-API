@@ -3,7 +3,7 @@ const { client } = require('../db.js');
 module.exports = {
   getAllQuestions: async function (req, res) {
     try {
-      const test = `select json_agg(
+      const query = `select json_agg(
         json_build_object(
           'question_id', q.id,
           'question_body', q.body,
@@ -31,38 +31,8 @@ module.exports = {
           )
         )
       ) as results from questions q where q.reported = false and q.product_id = ${req.query.product_id}`
-    // ;
-      // console.log('get all : ', req.query);
-      //   const query =
-      //     `WITH photos as (
-      //     SELECT
-      //       photos.*
-      //     FROM photos
-      //     GROUP BY photos.id
-      //     order by photos.id
-      // ), answers AS (
-      //     SELECT
-      //       answers.*,
-      //       json_agg(photos) as photos
-      //     FROM answers
-      //     LEFT JOIN photos ON photos.answer_id = answers.id
-      //     GROUP BY answers.id
-      //     order by answers.id
-      // ), questions AS (
-      //     SELECT
-      //       questions.*,
-      //       json_agg(answers) as answers
-      //     FROM questions
-      //     LEFT JOIN answers ON answers.question_id = questions.id
-      //     group by questions.id
-      //     order by questions.id
-      // )
-      // SELECT row_to_json(questions)
-      // FROM questions where product_id=${req.query.product_id}`
 
-      // if joins take too long add indexing to keys
-
-      const result = await client.query(test);
+      const result = await client.query(query);
       res.status(201).send(result.rows);
     }
     catch (err) {
@@ -85,7 +55,6 @@ module.exports = {
     console.log('req : ', req.params)
     try {
       const result = await client.query(`update questions set question_helpful=question_helpful + 1 where id=${req.params.question_id}`)
-      console.log('success')
       res.status(201).end();
     }
     catch (err) {
@@ -95,7 +64,6 @@ module.exports = {
   reportQuestion: async function (req, res) {
     try {
       const result = await client.query(`update questions set reported=true where id=${req.params.question_id}`)
-      console.log('success');
       res.status(201).end()
     }
     catch (err) {
